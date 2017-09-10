@@ -16,7 +16,7 @@
 }
 else
 {
-    <table class="table sorting" id="pages">
+    <table class="table sorting" id="sorting_items">
         <tr class="home">
             <th>
                 @Html.DisplayNameFor(model => model.Title)
@@ -75,11 +75,11 @@ else
             Drag and drop funcitonality
           */
 
-            $('table#pages tbody').sortable({
+            $('table#sorting_items tbody').sortable({
                 items: 'tr:not(.home)',
                 placeholder: 'ui-state-highlight',
                 update: function () {
-                    var ids = $('table#pages tbody').sortable('serialize');
+                    var ids = $('table#sorting_items tbody').sortable('serialize');
                     var url = '/Admin/Pages/ReorderPages'
 
                     $.post(url, ids, function (data) { })
