@@ -4,6 +4,7 @@ using cmsShoppingCard.Models.ViewModels.Shop;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 
 namespace cmsShoppingCard.Areas.Admin.Controllers
@@ -121,12 +122,13 @@ namespace cmsShoppingCard.Areas.Admin.Controllers
             return Id;
         }
 
+        // GET: Admin/Shop/AddProduct
         [HttpGet]
         public ActionResult AddProduct()
         {
             var model = new ProductViewModel();
 
-            using (DB db = new DB())
+            using (var db = new DB())
             {
                 model.Categories = new SelectList(db.Categories.ToList(), "Id", "Name");
 
@@ -134,9 +136,70 @@ namespace cmsShoppingCard.Areas.Admin.Controllers
             return View(model);
         }
 
+
+        // POST: Admin/Shop/AddProduct
+        [HttpPost]
+        public ActionResult AddProduct(ProductViewModel model, HttpPostedFileBase file)
+        {
+            if (!ModelState.IsValid)
+            {
+                using (var db = new DB())
+                { model.Categories = new SelectList(db.Categories.ToList(), "Id", "Name"); }
+
+                return View(model);
+            }
+
+            using (var db = new DB())
+            {
+                if (db.Products.Any(x => x.Name == model.Name))
+                {
+                    model.Categories = new SelectList(db.Categories.ToList(), "Id", "Name");
+                    ModelState.AddModelError("", "The Product name is taken");
+
+                }
+            }
+
+
+            using (var db = new DB())
+            {
+                var dto = new ProductDTO
+                {
+                    Name = model.Name,
+                    Slug = model.Name.Replace(" ", "-").ToLower(),
+                    Descritpion = model.Descritpion,
+                    Price = model.Price,
+                    CategoryId = model.CategoryId
+                };
+
+                var categoryDto = db.Categories.FirstOrDefault(x => x.Id == model.CategoryId);
+                if (categoryDto != null) dto.CategoryName = categoryDto.Name;
+
+                db.Products.Add(dto);
+                db.SaveChanges();
+
+                //Get the ID
+
+            }
+
+
+
+            #region Upload image
+
+            #endregion
+
+            return View();
+        }
+        // GET: Admin/Shop/Products
+        [HttpGet]
         public ActionResult Products()
         {
-            throw new System.NotImplementedException();
+            List<ProductViewModel> model;
+            using (DB db = new DB())
+            {
+                model = db.Products.ToArray().OrderBy(x => x.CategoryId).Select(x => new ProductViewModel(x)).ToList();
+            }
+
+            return View(model);
         }
     }
 }
