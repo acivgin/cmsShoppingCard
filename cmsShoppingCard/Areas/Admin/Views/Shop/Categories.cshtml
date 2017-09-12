@@ -55,7 +55,10 @@ else
 
             /*   Confirm category deletion   */
             $('body').on('click', 'a.delete', function (e) {
-                if (!confirm("Confirm category deletion")) return false;
+                if (!confirm("Confirm category deletion")) {
+                    $('#newcat_name').focus();
+                    return false;
+                }
             });
 
             /*   Add new category   */
@@ -72,34 +75,42 @@ else
             });
 
             // Click event
-            newCatAnchor.click(function (e) {
+            newCatAnchor.click(function(e) {
                 e.preventDefault();
 
                 var catName = newCatTextInput.val();
 
                 if (catName.length < 2) {
                     alert('Category name must be at least 2 characters long.');
+                    $('#newcat_name').focus();
+                    return false;
+                }
+
+
+                if (/^\s+$/.test(catName)) {
+                    alert('Please enter a valid name.');
+                    $('#newcat_name').focus();
                     return false;
                 }
 
                 ajaxText.show();
 
-
                 var url = '/admin/shop/AddNewCategory';
 
-                $.post(url, { catName: catName }, function (data) {
+                $.post(url, { catName: catName }, function(data) {
                     var response = data.trim();
 
                     if (response == 'titletaken') {
                         ajaxText.html(
-                          "<span class='alert alert-danger'>That title is taken</span>")
+                            "<span class='alert alert-danger'>That title is taken</span>")
 
-                        setTimeout(function () {
-                            ajaxText.fadeOut('fast', function () {
+                        setTimeout(function() {
+                            ajaxText.fadeOut('fast', function() {
                                 ajaxText.html(
                                     "<img src='/Content/img/ajax-loader.gif'/>");
                             });
-                        }, 2000)
+                        }, 2000);
+
                     } else {
                         // If table not exist during adding new category
                         if (!$('table#sorting_items').length)
@@ -108,15 +119,16 @@ else
                             // Category name is taken or return id of new category
                             ajaxText.html("<span class='alert alert-success'>The category has been added</span>")
 
-                            setTimeout(function () {
-                                ajaxText.fadeOut('fast', function () {
+                            setTimeout(function() {
+                                ajaxText.fadeOut('fast', function() {
                                     ajaxTxt.html(
                                         "<img src='/Content/img/ajax-loader.gif'/>");
                                 });
-                            }, 2000)
+                            }, 2000);
 
                             // Reset input value
                             newCatTextInput.val("");
+                            newCatTextInput.focus();
 
                             var toAppend = $('table#sorting_items tbody tr:last').clone();
                             toAppend.attr('id', 'id_' + data); // Id of new inserted category
@@ -134,7 +146,7 @@ else
                     return false;
                 });
 
-            })
+            });
 
 
             /*   Drag and drop funcitonality   */
@@ -143,9 +155,9 @@ else
                 placeholder: 'ui-state-highlight',
                 update: function () {
                     var ids = $('table#sorting_items tbody').sortable('serialize');
-                    var url = '/Admin/Shop/ReorderCategories'
+                    var url = '/Admin/Shop/ReorderCategories';
 
-                    $.post(url, ids, function (data) { })
+                    $.post(url, ids, function (data) { });
                 }
 
             });
