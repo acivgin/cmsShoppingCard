@@ -1,5 +1,6 @@
 ﻿using cmsShoppingCard.Models.Data;
 using cmsShoppingCard.Models.Shop.ViewModels;
+using cmsShoppingCard.Models.ViewModels.Shop;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -118,6 +119,24 @@ namespace cmsShoppingCard.Areas.Admin.Controllers
             }
 
             return Id;
+        }
+
+        [HttpGet]
+        public ActionResult AddProduct()
+        {
+            var model = new ProductViewModel();
+
+            using (DB db = new DB())
+            {
+                model.Categories = new SelectList(db.Categories.ToList(), "Id", "Name");
+
+            }
+            return View(model);
+        }
+
+        public ActionResult Products()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

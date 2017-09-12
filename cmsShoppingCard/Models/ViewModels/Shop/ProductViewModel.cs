@@ -1,5 +1,6 @@
 ﻿using cmsShoppingCard.Models.Data;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
@@ -28,6 +29,7 @@ namespace cmsShoppingCard.Models.ViewModels.Shop
         public string Descritpion { get; set; }
         public decimal Price { get; set; }
         public string CategoryName { get; set; }
+        [DisplayName("Categories")]
         public int CategoryId { get; set; }
         public string ImageName { get; set; }
 
